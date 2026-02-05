@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  PROMPT AVANZADO PARA CRUD DE MONOPOLY
+  Generado: 2026-02-05
+  Técnicas utilizadas: Role Prompting, Chain of Thought, Constraint-Based, Output Formatting
+-->
+
+<PROMPT_CRUD_MONOPOLY_AVANZADO>
+    <ROL>
+    Actúa como un desarrollador frontend senior especializado en JavaScript ES6+, 
+    arquitectura de aplicaciones SPA, diseño UI/UX premium y visualización de datos.
+    Tienes experiencia creando dashboards interactivos y aplicaciones financieras.
+    </ROL>
+
+    <CONTEXTO>
+    Desarrolla una aplicación web completa para gestionar transacciones económicas 
+    del juego Monopoly. Debe ser una SPA sin frameworks externos, usando únicamente 
+    HTML5, CSS3 y JavaScript vanilla. La app servirá como herramienta profesional 
+    para llevar el control financiero de partidas de Monopoly.
+    </CONTEXTO>
+
+    <MODELO_DE_DATOS>
+        <JUGADOR>
+      {
+        id: string (UUID),
+        nombre: string,
+        color: string,           // Color identificativo del jugador
+        avatar: string,          // Emoji o inicial
+        saldoActual: number      // Calculado automáticamente
+      }
+        </JUGADOR>
+
+        <TRANSACCION>
+      {
+        id: string (UUID),
+        fecha: Date,
+        jugadorOrigen: string,   // ID del jugador que paga
+        jugadorDestino: string,  // ID del jugador que cobra (o "Banca")
+        concepto: enum [
+          "Alquiler",
+          "Compra Propiedad", 
+          "Venta Propiedad",
+          "Construcción Casa",
+          "Construcción Hotel",
+          "Hipoteca",
+          "Deshipoteca",
+          "Impuesto Lujo",
+          "Impuesto Renta",
+          "Carta Suerte",
+          "Carta Caja Comunidad",
+          "Salida (Cobro 200)",
+          "Cárcel (Fianza)",
+          "Otro"
+        ],
+        monto: number,
+        propiedad: string | null,       // Nombre de la propiedad
+        colorGrupo: enum [              // Color del grupo de propiedades
+          "Marrón", "Celeste", "Rosa", "Naranja",
+          "Rojo", "Amarillo", "Verde", "Azul",
+          "Estación", "Servicio", null
+        ],
+        casas: number (0-4),            // Número de casas
+        hotel: boolean,                 // Si tiene hotel
+        notas: string                   // Comentarios opcionales
+      }
+        </TRANSACCION>
+
+        <PARTIDA>
+      {
+        id: string (UUID),
+        nombre: string,
+        fechaInicio: Date,
+        fechaFin: Date | null,
+        jugadores: Jugador[],
+        transacciones: Transaccion[],
+        activa: boolean
+      }
+        </PARTIDA>
+    </MODELO_DE_DATOS>
+
+    <FUNCIONALIDADES_CORE>
+        <CRUD_TRANSACCIONES>
+      - CREATE: Modal elegante con formulario validado y autocompletado
+      - READ: Tabla interactiva con paginación y ordenación por columnas
+      - UPDATE: Edición mediante modal con los datos precargados
+      - DELETE: Confirmación con animación y opción de deshacer (undo)
+        </CRUD_TRANSACCIONES>
+
+        <CRUD_JUGADORES>
+      - Añadir/editar/eliminar jugadores de la partida
+      - Asignar color y avatar a cada jugador
+      - Ver historial de transacciones por jugador
+        </CRUD_JUGADORES>
+
+        <GESTION_PARTIDAS>
+      - Crear nueva partida con configuración inicial
+      - Cambiar entre partidas guardadas
+      - Finalizar partida y ver resumen
+        </GESTION_PARTIDAS>
+    </FUNCIONALIDADES_CORE>
+
+    <FUNCIONALIDADES_AVANZADAS>
+        <DASHBOARD>
+      - Panel resumen con saldos actuales de todos los jugadores
+      - Indicadores de quién va ganando/perdiendo
+      - Últimas 5 transacciones recientes
+        </DASHBOARD>
+
+        <ESTADISTICAS>
+      - Gráfico de barras: balance por jugador
+      - Gráfico de líneas: evolución del patrimonio en el tiempo
+      - Gráfico circular: distribución de gastos por concepto
+      - Usar Canvas API o SVG para gráficos (sin librerías externas)
+        </ESTADISTICAS>
+
+        <FILTROS_BUSQUEDA>
+      - Filtrar por jugador (origen/destino)
+      - Filtrar por rango de fechas
+      - Filtrar por concepto
+      - Filtrar por color de propiedad
+      - Búsqueda por texto libre
+      - Combinar múltiples filtros
+        </FILTROS_BUSQUEDA>
+
+        <IMPORTAR_EXPORTAR>
+      - Importar CSV: con validación, preview y mapeo de columnas
+      - Exportar CSV: transacciones filtradas o completas
+      - Exportar JSON: backup completo de la partida
+        </IMPORTAR_EXPORTAR>
+    </FUNCIONALIDADES_AVANZADAS>
+
+    <DISENO_UI_UX>
+        <TEMA>
+      Diseño dark mode premium inspirado en el tablero de Monopoly, con 
+      elementos de glassmorphism, gradientes sutiles y micro-animaciones.
+        </TEMA>
+
+        <PALETA_COLORES>
+      --bg-primary: #0d1117;
+      --bg-secondary: #161b22;
+      --bg-card: rgba(30, 40, 55, 0.8);
+      --glass: rgba(255, 255, 255, 0.05);
+      --border: rgba(255, 255, 255, 0.1);
+      --accent-red: #e94560;      /* Rojo Monopoly */
+      --accent-green: #2ecc71;    /* Verde dinero */
+      --accent-gold: #f1c40f;     /* Dorado premium */
+      --accent-blue: #3498db;     /* Azul info */
+      --text-primary: #f0f6fc;
+      --text-secondary: #8b949e;
+      
+      /* Colores propiedades Monopoly */
+      --prop-marron: #8B4513;
+      --prop-celeste: #87CEEB;
+      --prop-rosa: #FF69B4;
+      --prop-naranja: #FFA500;
+      --prop-rojo: #FF0000;
+      --prop-amarillo: #FFFF00;
+      --prop-verde: #008000;
+      --prop-azul: #0000FF;
+        </PALETA_COLORES>
+
+        <TIPOGRAFIA>
+      - Títulos: 'Outfit' o 'Poppins' (Google Fonts)
+      - Cuerpo: 'Inter' (Google Fonts)
+      - Montos: 'JetBrains Mono' para números
+        </TIPOGRAFIA>
+
+        <COMPONENTES_UI>
+      - Cards con efecto glassmorphism y bordes sutiles
+      - Botones con hover animado y ripple effect
+      - Inputs con etiquetas flotantes (floating labels)
+      - Dropdowns estilizados con iconos
+      - Toasts/notificaciones animadas
+      - Modales con backdrop blur
+      - Skeleton loaders para estados de carga
+      - Badges de colores para propiedades
+        </COMPONENTES_UI>
+
+        <ANIMACIONES>
+      - Transiciones suaves (300ms ease)
+      - Fade in/out para modales
+      - Slide para notificaciones
+      - Scale para hover en cards
+      - Número animado para cambios de saldo
+        </ANIMACIONES>
+
+        <RESPONSIVE>
+      - Mobile-first approach
+      - Breakpoints: 480px, 768px, 1024px, 1280px
+      - Tabla adaptable a cards en móvil
+      - Menú hamburguesa en pantallas pequeñas
+        </RESPONSIVE>
+    </DISENO_UI_UX>
+
+    <ESTRUCTURA_PROYECTO>
+    /monopoly-tracker
+    ├── index.html           # Estructura principal SPA
+    ├── css/
+    │   ├── styles.css       # Estilos principales
+    │   ├── components.css   # Componentes reutilizables
+    │   └── animations.css   # Keyframes y transiciones
+    ├── js/
+    │   ├── app.js           # Controlador principal
+    │   ├── data.js          # Modelo de datos y LocalStorage
+    │   ├── ui.js            # Renderizado y DOM
+    │   ├── charts.js        # Gráficos con Canvas/SVG
+    │   └── csv.js           # Importar/Exportar CSV
+    └── assets/
+        └── icons/           # Iconos SVG inline
+    </ESTRUCTURA_PROYECTO>
+
+    <PERSISTENCIA>
+    - Usar LocalStorage para guardar partidas
+    - Estructura: { partidas: [], partidaActiva: id }
+    - Guardar automáticamente tras cada cambio
+    - Opción de exportar/importar backup JSON
+    </PERSISTENCIA>
+
+    <VALIDACIONES>
+    - Monto: número positivo, máximo 2 decimales
+    - Jugador: requerido, mínimo 2 caracteres
+    - Fecha: no puede ser futura
+    - Casas: 0-4, hotel solo si 4 casas previas
+    - CSV: validar headers y tipos de datos
+    </VALIDACIONES>
+
+    <ACCESIBILIDAD>
+    - Semántica HTML5 correcta
+    - ARIA labels en elementos interactivos
+    - Navegación por teclado
+    - Contraste de colores WCAG AA
+    - Focus visible en todos los elementos
+    </ACCESIBILIDAD>
+
+    <OUTPUT>
+    Genera el código completo y funcional de todos los archivos.
+    Incluye comentarios explicativos en español.
+    El código debe funcionar al abrir index.html directamente.
+    Prioriza código limpio, modular y mantenible.
+    </OUTPUT>
+</PROMPT_CRUD_MONOPOLY_AVANZADO>
