@@ -1,0 +1,644 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Aplicación para gestionar transacciones y cobros del juego Monopoly"
+    />
+    <title>Monopoly Tracker - Gestión de Partidas</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Estilos -->
+    <link rel="stylesheet" href="css/styles.css" />
+    <link rel="stylesheet" href="css/components.css" />
+    <link rel="stylesheet" href="css/animations.css" />
+  </head>
+  <body>
+    <!-- ===== HEADER ===== -->
+    <header class="header">
+      <div class="header__logo">
+        <span class="logo-icon">🎩</span>
+        <h1>Monopoly Tracker</h1>
+      </div>
+      <nav class="header__nav">
+        <button
+          class="nav-btn active"
+          data-view="dashboard"
+          aria-label="Ver Dashboard"
+        >
+          <span class="nav-icon">📊</span>
+          <span class="nav-text">Dashboard</span>
+        </button>
+        <button
+          class="nav-btn"
+          data-view="transactions"
+          aria-label="Ver Transacciones"
+        >
+          <span class="nav-icon">💰</span>
+          <span class="nav-text">Transacciones</span>
+        </button>
+        <button class="nav-btn" data-view="players" aria-label="Ver Jugadores">
+          <span class="nav-icon">👥</span>
+          <span class="nav-text">Jugadores</span>
+        </button>
+        <button class="nav-btn" data-view="stats" aria-label="Ver Estadísticas">
+          <span class="nav-icon">📈</span>
+          <span class="nav-text">Estadísticas</span>
+        </button>
+      </nav>
+      <div class="header__actions">
+        <select
+          id="gameSelect"
+          class="game-select"
+          aria-label="Seleccionar partida"
+        >
+          <option value="">Nueva Partida</option>
+        </select>
+        <button
+          class="btn btn--icon"
+          id="btnNewGame"
+          aria-label="Crear nueva partida"
+        >
+          ➕
+        </button>
+        <button
+          class="btn btn--icon"
+          id="btnImportCSV"
+          aria-label="Importar CSV"
+        >
+          📥
+        </button>
+        <button
+          class="btn btn--icon"
+          id="btnExportCSV"
+          aria-label="Exportar CSV"
+        >
+          📤
+        </button>
+      </div>
+      <!-- Menú hamburguesa móvil -->
+      <button class="hamburger" id="hamburgerBtn" aria-label="Menú">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </header>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <main class="main-content">
+      <!-- Vista Dashboard -->
+      <section id="dashboardView" class="view view--active">
+        <div class="dashboard">
+          <!-- Resumen de jugadores -->
+          <div class="dashboard__players">
+            <h2 class="section-title">💰 Saldos de Jugadores</h2>
+            <div class="player-cards" id="playerCards">
+              <!-- Se genera dinámicamente -->
+            </div>
+          </div>
+
+          <!-- Últimas transacciones -->
+          <div class="dashboard__recent">
+            <h2 class="section-title">🕐 Últimas Transacciones</h2>
+            <div class="recent-list" id="recentTransactions">
+              <!-- Se genera dinámicamente -->
+            </div>
+          </div>
+
+          <!-- Resumen rápido -->
+          <div class="dashboard__summary">
+            <div class="summary-card">
+              <span class="summary-icon">🎮</span>
+              <div class="summary-info">
+                <span class="summary-label">Partida Activa</span>
+                <span class="summary-value" id="activeGameName"
+                  >Sin partida</span
+                >
+              </div>
+            </div>
+            <div class="summary-card">
+              <span class="summary-icon">📝</span>
+              <div class="summary-info">
+                <span class="summary-label">Total Transacciones</span>
+                <span class="summary-value" id="totalTransactions">0</span>
+              </div>
+            </div>
+            <div class="summary-card">
+              <span class="summary-icon">🏆</span>
+              <div class="summary-info">
+                <span class="summary-label">Líder Actual</span>
+                <span class="summary-value" id="currentLeader">-</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Vista Transacciones -->
+      <section id="transactionsView" class="view">
+        <div class="transactions">
+          <!-- Toolbar -->
+          <div class="toolbar">
+            <div class="toolbar__search">
+              <input
+                type="text"
+                id="searchInput"
+                class="search-input"
+                placeholder="Buscar transacción..."
+              />
+            </div>
+            <div class="toolbar__filters">
+              <select id="filterPlayer" class="filter-select">
+                <option value="">Todos los jugadores</option>
+              </select>
+              <select id="filterConcept" class="filter-select">
+                <option value="">Todos los conceptos</option>
+                <option value="Alquiler">Alquiler</option>
+                <option value="Compra Propiedad">Compra Propiedad</option>
+                <option value="Venta Propiedad">Venta Propiedad</option>
+                <option value="Construcción Casa">Construcción Casa</option>
+                <option value="Construcción Hotel">Construcción Hotel</option>
+                <option value="Hipoteca">Hipoteca</option>
+                <option value="Deshipoteca">Deshipoteca</option>
+                <option value="Impuesto Lujo">Impuesto Lujo</option>
+                <option value="Impuesto Renta">Impuesto Renta</option>
+                <option value="Carta Suerte">Carta Suerte</option>
+                <option value="Carta Caja Comunidad">
+                  Carta Caja Comunidad
+                </option>
+                <option value="Salida (Cobro 200)">Salida (Cobro 200)</option>
+                <option value="Cárcel (Fianza)">Cárcel (Fianza)</option>
+                <option value="Otro">Otro</option>
+              </select>
+              <select id="filterColor" class="filter-select">
+                <option value="">Todos los colores</option>
+                <option value="Marrón">🟤 Marrón</option>
+                <option value="Celeste">🩵 Celeste</option>
+                <option value="Rosa">🩷 Rosa</option>
+                <option value="Naranja">🟠 Naranja</option>
+                <option value="Rojo">🔴 Rojo</option>
+                <option value="Amarillo">🟡 Amarillo</option>
+                <option value="Verde">🟢 Verde</option>
+                <option value="Azul">🔵 Azul</option>
+                <option value="Estación">🚂 Estación</option>
+                <option value="Servicio">💡 Servicio</option>
+              </select>
+            </div>
+            <button class="btn btn--primary" id="btnAddTransaction">
+              <span>➕</span> Nueva Transacción
+            </button>
+          </div>
+
+          <!-- Tabla de transacciones -->
+          <div class="table-container">
+            <table class="data-table" id="transactionsTable">
+              <thead>
+                <tr>
+                  <th data-sort="fecha">
+                    Fecha <span class="sort-icon">↕</span>
+                  </th>
+                  <th data-sort="jugadorOrigen">
+                    De <span class="sort-icon">↕</span>
+                  </th>
+                  <th data-sort="jugadorDestino">
+                    Para <span class="sort-icon">↕</span>
+                  </th>
+                  <th data-sort="concepto">
+                    Concepto <span class="sort-icon">↕</span>
+                  </th>
+                  <th data-sort="monto">
+                    Monto <span class="sort-icon">↕</span>
+                  </th>
+                  <th>Propiedad</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="transactionsBody">
+                <!-- Se genera dinámicamente -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Paginación -->
+          <div class="pagination" id="pagination">
+            <button class="pagination__btn" id="prevPage">← Anterior</button>
+            <span class="pagination__info" id="pageInfo">Página 1 de 1</span>
+            <button class="pagination__btn" id="nextPage">Siguiente →</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Vista Jugadores -->
+      <section id="playersView" class="view">
+        <div class="players">
+          <div class="toolbar">
+            <h2 class="section-title">👥 Gestión de Jugadores</h2>
+            <button class="btn btn--primary" id="btnAddPlayer">
+              <span>➕</span> Nuevo Jugador
+            </button>
+          </div>
+
+          <div class="players-grid" id="playersGrid">
+            <!-- Se genera dinámicamente -->
+          </div>
+        </div>
+      </section>
+
+      <!-- Vista Estadísticas -->
+      <section id="statsView" class="view">
+        <div class="stats">
+          <h2 class="section-title">📈 Estadísticas de la Partida</h2>
+
+          <div class="charts-grid">
+            <div class="chart-card">
+              <h3>Balance por Jugador</h3>
+              <canvas id="balanceChart"></canvas>
+            </div>
+            <div class="chart-card">
+              <h3>Distribución por Concepto</h3>
+              <canvas id="conceptChart"></canvas>
+            </div>
+            <div class="chart-card chart-card--wide">
+              <h3>Evolución del Patrimonio</h3>
+              <canvas id="evolutionChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- ===== MODALES ===== -->
+
+    <!-- Modal Nueva Transacción -->
+    <div class="modal" id="transactionModal">
+      <div class="modal__backdrop"></div>
+      <div class="modal__content">
+        <div class="modal__header">
+          <h2 id="transactionModalTitle">Nueva Transacción</h2>
+          <button class="modal__close" aria-label="Cerrar">&times;</button>
+        </div>
+        <form class="modal__body" id="transactionForm">
+          <input type="hidden" id="transactionId" />
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="txJugadorOrigen">De (Quien paga)</label>
+              <select id="txJugadorOrigen" required>
+                <option value="">Seleccionar...</option>
+                <option value="banca">🏦 Banca</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="txJugadorDestino">Para (Quien cobra)</label>
+              <select id="txJugadorDestino" required>
+                <option value="">Seleccionar...</option>
+                <option value="banca">🏦 Banca</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="txConcepto">Concepto</label>
+              <select id="txConcepto" required>
+                <option value="">Seleccionar...</option>
+                <option value="Alquiler">Alquiler</option>
+                <option value="Compra Propiedad">Compra Propiedad</option>
+                <option value="Venta Propiedad">Venta Propiedad</option>
+                <option value="Construcción Casa">Construcción Casa</option>
+                <option value="Construcción Hotel">Construcción Hotel</option>
+                <option value="Hipoteca">Hipoteca</option>
+                <option value="Deshipoteca">Deshipoteca</option>
+                <option value="Impuesto Lujo">Impuesto Lujo</option>
+                <option value="Impuesto Renta">Impuesto Renta</option>
+                <option value="Carta Suerte">Carta Suerte</option>
+                <option value="Carta Caja Comunidad">
+                  Carta Caja Comunidad
+                </option>
+                <option value="Salida (Cobro 200)">Salida (Cobro 200)</option>
+                <option value="Cárcel (Fianza)">Cárcel (Fianza)</option>
+                <option value="Otro">Otro</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="txMonto">Monto ($)</label>
+              <input type="number" id="txMonto" min="0" step="1" required />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="txPropiedad">Propiedad (opcional)</label>
+              <input
+                type="text"
+                id="txPropiedad"
+                placeholder="Ej: Paseo del Prado"
+              />
+            </div>
+            <div class="form-group">
+              <label for="txColorGrupo">Color del Grupo</label>
+              <select id="txColorGrupo">
+                <option value="">Sin especificar</option>
+                <option value="Marrón">🟤 Marrón</option>
+                <option value="Celeste">🩵 Celeste</option>
+                <option value="Rosa">🩷 Rosa</option>
+                <option value="Naranja">🟠 Naranja</option>
+                <option value="Rojo">🔴 Rojo</option>
+                <option value="Amarillo">🟡 Amarillo</option>
+                <option value="Verde">🟢 Verde</option>
+                <option value="Azul">🔵 Azul</option>
+                <option value="Estación">🚂 Estación</option>
+                <option value="Servicio">💡 Servicio</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="txCasas">Casas</label>
+              <select id="txCasas">
+                <option value="0">0</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="checkbox-label">
+                <input type="checkbox" id="txHotel" />
+                <span>🏨 Tiene Hotel</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="txNotas">Notas (opcional)</label>
+            <textarea
+              id="txNotas"
+              rows="2"
+              placeholder="Comentarios adicionales..."
+            ></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="txFecha">Fecha</label>
+            <input type="datetime-local" id="txFecha" required />
+          </div>
+        </form>
+        <div class="modal__footer">
+          <button type="button" class="btn btn--secondary modal__cancel">
+            Cancelar
+          </button>
+          <button type="submit" form="transactionForm" class="btn btn--primary">
+            Guardar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Nuevo Jugador -->
+    <div class="modal" id="playerModal">
+      <div class="modal__backdrop"></div>
+      <div class="modal__content modal__content--small">
+        <div class="modal__header">
+          <h2 id="playerModalTitle">Nuevo Jugador</h2>
+          <button class="modal__close" aria-label="Cerrar">&times;</button>
+        </div>
+        <form class="modal__body" id="playerForm">
+          <input type="hidden" id="playerId" />
+
+          <div class="form-group">
+            <label for="playerNombre">Nombre del Jugador</label>
+            <input
+              type="text"
+              id="playerNombre"
+              required
+              minlength="2"
+              placeholder="Ej: Juan"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="playerAvatar">Avatar (Emoji)</label>
+            <div class="avatar-picker" id="avatarPicker">
+              <button type="button" class="avatar-option" data-avatar="🎩">
+                🎩
+              </button>
+              <button type="button" class="avatar-option" data-avatar="🚗">
+                🚗
+              </button>
+              <button type="button" class="avatar-option" data-avatar="🐕">
+                🐕
+              </button>
+              <button type="button" class="avatar-option" data-avatar="👢">
+                👢
+              </button>
+              <button type="button" class="avatar-option" data-avatar="🚢">
+                🚢
+              </button>
+              <button type="button" class="avatar-option" data-avatar="🎲">
+                🎲
+              </button>
+              <button type="button" class="avatar-option" data-avatar="💎">
+                💎
+              </button>
+              <button type="button" class="avatar-option" data-avatar="🏠">
+                🏠
+              </button>
+            </div>
+            <input type="hidden" id="playerAvatar" value="🎩" />
+          </div>
+
+          <div class="form-group">
+            <label for="playerColor">Color del Jugador</label>
+            <div class="color-picker" id="colorPicker">
+              <button
+                type="button"
+                class="color-option"
+                data-color="#e94560"
+                style="background: #e94560"
+              ></button>
+              <button
+                type="button"
+                class="color-option"
+                data-color="#2ecc71"
+                style="background: #2ecc71"
+              ></button>
+              <button
+                type="button"
+                class="color-option"
+                data-color="#3498db"
+                style="background: #3498db"
+              ></button>
+              <button
+                type="button"
+                class="color-option"
+                data-color="#f1c40f"
+                style="background: #f1c40f"
+              ></button>
+              <button
+                type="button"
+                class="color-option"
+                data-color="#9b59b6"
+                style="background: #9b59b6"
+              ></button>
+              <button
+                type="button"
+                class="color-option"
+                data-color="#e67e22"
+                style="background: #e67e22"
+              ></button>
+              <button
+                type="button"
+                class="color-option"
+                data-color="#1abc9c"
+                style="background: #1abc9c"
+              ></button>
+              <button
+                type="button"
+                class="color-option"
+                data-color="#ff6b9d"
+                style="background: #ff6b9d"
+              ></button>
+            </div>
+            <input type="hidden" id="playerColor" value="#e94560" />
+          </div>
+
+          <div class="form-group">
+            <label for="playerSaldoInicial">Saldo Inicial ($)</label>
+            <input type="number" id="playerSaldoInicial" value="1500" min="0" />
+          </div>
+        </form>
+        <div class="modal__footer">
+          <button type="button" class="btn btn--secondary modal__cancel">
+            Cancelar
+          </button>
+          <button type="submit" form="playerForm" class="btn btn--primary">
+            Guardar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Nueva Partida -->
+    <div class="modal" id="gameModal">
+      <div class="modal__backdrop"></div>
+      <div class="modal__content modal__content--small">
+        <div class="modal__header">
+          <h2>Nueva Partida</h2>
+          <button class="modal__close" aria-label="Cerrar">&times;</button>
+        </div>
+        <form class="modal__body" id="gameForm">
+          <div class="form-group">
+            <label for="gameName">Nombre de la Partida</label>
+            <input
+              type="text"
+              id="gameName"
+              required
+              placeholder="Ej: Partida familiar"
+            />
+          </div>
+        </form>
+        <div class="modal__footer">
+          <button type="button" class="btn btn--secondary modal__cancel">
+            Cancelar
+          </button>
+          <button type="submit" form="gameForm" class="btn btn--primary">
+            Crear Partida
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Importar CSV -->
+    <div class="modal" id="importModal">
+      <div class="modal__backdrop"></div>
+      <div class="modal__content">
+        <div class="modal__header">
+          <h2>📥 Importar desde CSV</h2>
+          <button class="modal__close" aria-label="Cerrar">&times;</button>
+        </div>
+        <div class="modal__body">
+          <div class="import-zone" id="importZone">
+            <input type="file" id="csvFileInput" accept=".csv" hidden />
+            <div class="import-zone__content">
+              <span class="import-icon">📁</span>
+              <p>
+                Arrastra un archivo CSV aquí o
+                <button type="button" class="link-btn" id="selectFileBtn">
+                  selecciona un archivo
+                </button>
+              </p>
+            </div>
+          </div>
+          <div class="import-preview" id="importPreview" hidden>
+            <h3>Vista Previa</h3>
+            <div class="preview-table-container">
+              <table class="preview-table" id="previewTable">
+                <thead></thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="modal__footer">
+          <button type="button" class="btn btn--secondary modal__cancel">
+            Cancelar
+          </button>
+          <button
+            type="button"
+            class="btn btn--primary"
+            id="confirmImport"
+            disabled
+          >
+            Importar Datos
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Confirmar Eliminación -->
+    <div class="modal" id="confirmModal">
+      <div class="modal__backdrop"></div>
+      <div class="modal__content modal__content--small">
+        <div class="modal__header">
+          <h2>⚠️ Confirmar Eliminación</h2>
+          <button class="modal__close" aria-label="Cerrar">&times;</button>
+        </div>
+        <div class="modal__body">
+          <p id="confirmMessage">
+            ¿Estás seguro de que deseas eliminar este elemento?
+          </p>
+        </div>
+        <div class="modal__footer">
+          <button type="button" class="btn btn--secondary modal__cancel">
+            Cancelar
+          </button>
+          <button type="button" class="btn btn--danger" id="confirmDelete">
+            Eliminar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Scripts -->
+    <script src="js/data.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/csv.js"></script>
+    <script src="js/charts.js"></script>
+    <script src="js/app.js"></script>
+  </body>
+</html>
