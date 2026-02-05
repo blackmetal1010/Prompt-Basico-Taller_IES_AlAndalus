@@ -1,6 +1,6 @@
 # Prompt-Basico
 
-Durante la realización del taller de IES AlAndalus he generado un prompt basico con las siguientes caracteristicas 
+Durante la realización del taller *ViewNext - Programando con IA generativa* de IES AlAndalus he generado un prompt basico con las siguientes caracteristicas 
 
 - Crear una aplicación CRUD básica
 - Permitir que pueda cargar archivos CSV
